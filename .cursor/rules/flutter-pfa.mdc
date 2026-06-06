@@ -1,0 +1,14 @@
+---
+description: Arquitectura PFA y flutter_it para mi_app (AgroCare)
+globs: lib/**/*.dart
+alwaysApply: false
+---
+
+# Flutter PFA (mi_app)
+
+- Organizar por **features** bajo `lib/features/`, compartidos en `lib/_shared/`.
+- **Services**: fronteras externas (Firebase, image_picker). Sin estado de app.
+- **Managers**: lógica de negocio, `Command`, `ValueListenable`. Registrar en `get_it`.
+- **Views**: `WatchingWidget` / `WatchingStatefulWidget`, `watchValue`, `registerHandler`.
+- DI en `lib/locator.dart`; sesión de usuario con `pushNewScope` / `popScope`.
+- Guías detalladas: `flutter_it_ai_skills/` (get-it, watch-it, command-it, architecture).

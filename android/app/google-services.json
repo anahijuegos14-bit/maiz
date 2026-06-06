@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359631759790",
+    "project_id": "plantmanagerapp-eac9f",
+    "storage_bucket": "plantmanagerapp-eac9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359631759790:android:ee6db2a862e6977d63403f",
+        "android_client_info": {
+          "package_name": "com.example.mi_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpy4qf-iyoKe_2xTxfN4YCaprnuA3rpZQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
