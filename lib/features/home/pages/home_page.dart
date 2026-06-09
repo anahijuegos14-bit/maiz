@@ -191,7 +191,14 @@ class _DashboardView extends WatchingWidget {
 
   Widget build(BuildContext context) {
 
-    
+    // Observe authenticated user first and wait for session managers to be
+    // ready. This prevents calling watchValue on managers that are not yet
+    // registered (causes runtime errors). Keeps watch order stable as
+    // required by watch_it.
+    final user = watchValue((AuthManager m) => m.userState);
+    if (user == null || !allReady()) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     final plants = watchValue((PlantsManager m) => m.plants);
 
