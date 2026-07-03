@@ -21,9 +21,7 @@ class AiChatManager {
   final messages = ValueNotifier<List<ChatMessage>>([
     ChatMessage(
       text:
-          '¡Hola! 🌽 Soy tu asistente agrónomo. Selecciona una planta para que '
-          'pueda ver su estado y darte consejos personalizados, o pregúntame lo '
-          'que quieras sobre maíz.',
+          '¡Hola! 🌽 Soy tu asistente agrónomo. Selecciona una planta para que pueda ver su estado y darte consejos personalizados, o pregúntame lo que quieras sobre maíz.',
       isUser: false,
       timestamp: DateTime.now(),
     ),
@@ -41,12 +39,6 @@ class AiChatManager {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
 
-    final userMsg = ChatMessage(
-      text: trimmed,
-      isUser: true,
-      timestamp: DateTime.now(),
-    );
-
     PlantDto? plant;
     final plantId = selectedPlantId.value;
     if (plantId != null) {
@@ -58,19 +50,19 @@ class AiChatManager {
       }
     }
 
-    final recentAnalyses = _analysisManager.analyses.value
-        .map((e) => e.dto)
-        .toList();
-
     final response = _chatService.generateResponse(
       userMessage: trimmed,
       plant: plant,
-      recentAnalyses: recentAnalyses,
+      recentAnalyses: _analysisManager.analyses.value.map((e) => e.dto).toList(),
     );
 
     messages.value = [
       ...messages.value,
-      userMsg,
+      ChatMessage(
+        text: trimmed,
+        isUser: true,
+        timestamp: DateTime.now(),
+      ),
       ChatMessage(
         text: response,
         isUser: false,

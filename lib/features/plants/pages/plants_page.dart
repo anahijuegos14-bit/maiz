@@ -10,7 +10,20 @@ class PlantsPage extends WatchingWidget {
 
   @override
   Widget build(BuildContext context) {
-    final plants = watchValue((PlantsManager m) => m.plants);
+    // Evitar acceder al manager si aún no está registrado/listo.
+    if (!di.isRegistered<PlantsManager>()) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Anotación explícita para evitar 'prefer_typing_uninitialized_variables'
+    late final List<dynamic> plants;
+    try {
+      plants = watchValue((PlantsManager m) => m.plants);
+    } on StateError {
+      // Manager aún no listo: mostrar indicador y volver a intentar en rebuild.
+      return const Center(child: CircularProgressIndicator());
+    }
+
     final colors = Theme.of(context).colorScheme;
 
     return Stack(

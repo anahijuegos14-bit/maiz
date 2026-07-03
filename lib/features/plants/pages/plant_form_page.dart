@@ -98,7 +98,10 @@ class _PlantFormPageState extends State<PlantFormPage> {
 
   double? _parseArea() {
     final text = _areaController.text.trim();
-    if (text.isEmpty) return null;
+    if (text.isEmpty) {
+      setState(() => _areaError = 'Ingresa un área mayor a 0.');
+      return null;
+    }
     final value = double.tryParse(text.replaceAll(',', '.'));
     if (value == null || value <= 0) {
       setState(() => _areaError = 'Debe ser mayor a 0.');
@@ -263,13 +266,9 @@ class _PlantFormPageState extends State<PlantFormPage> {
       return;
     }
 
-    final areaText = _areaController.text.trim();
-    double area = 0;
-    if (areaText.isNotEmpty) {
-      final parsed = _parseArea();
-      if (parsed == null) return;
-      area = parsed;
-    }
+    final parsedArea = _parseArea();
+    if (parsedArea == null) return;
+    final area = parsedArea;
 
     final lat = double.tryParse(_latController.text.trim());
     final lng = double.tryParse(_lngController.text.trim());

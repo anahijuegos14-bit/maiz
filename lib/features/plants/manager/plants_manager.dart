@@ -60,6 +60,8 @@ class PlantsManager {
   Future<PlantsManager> init() async {
     _subscription = _service.watchPlants(_user.id).listen((entries) {
       plants.value = entries;
+    }, onError: (_) {
+      plants.value = const [];
     });
     return this;
   }

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../_shared/errors/exceptions.dart';
@@ -5,8 +8,10 @@ import '../model/app_user.dart';
 
 class FirebaseAuthService {
   final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
 
-  FirebaseAuthService(this.firebaseAuth);
+  FirebaseAuthService(this.firebaseAuth, [FirebaseFirestore? firestore])
+      : firestore = firestore ?? FirebaseFirestore.instance;
 
   Stream<User?> authStateChanges() => firebaseAuth.authStateChanges();
 
@@ -61,6 +66,7 @@ class FirebaseAuthService {
       if (refreshedUser == null) {
         throw ServerException('No se pudo actualizar el perfil.');
       }
+      unawaited(_saveUserProfile(refreshedUser, name, email));
       return mapUser(refreshedUser);
     } on FirebaseAuthException catch (e) {
       throw ServerException(_mapError(e));
@@ -77,6 +83,19 @@ class FirebaseAuthService {
 
   Future<void> logout() async {
     await firebaseAuth.signOut();
+  }
+
+  Future<void> _saveUserProfile(User user, String name, String email) async {
+    try {
+      await firestore.collection('users').doc(user.uid).set({
+        'name': name.trim(),
+        'email': user.email ?? email.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true)).timeout(const Duration(seconds: 5));
+    } on Object {
+      // La cuenta ya fue creada en Firebase Auth. Si Firestore falla por reglas,
+      // red o demora, no bloqueamos el ingreso a la app.
+    }
   }
 
   String _mapError(FirebaseAuthException e) => mapFirebaseAuthError(e);

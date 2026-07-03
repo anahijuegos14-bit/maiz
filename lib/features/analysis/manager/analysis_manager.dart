@@ -83,6 +83,8 @@ class AnalysisManager {
   Future<AnalysisManager> init() async {
     _subscription = _service.watchAnalyses(_userId).listen((entries) {
       analyses.value = entries;
+    }, onError: (_) {
+      analyses.value = const [];
     });
     return this;
   }

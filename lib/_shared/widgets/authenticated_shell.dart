@@ -18,12 +18,6 @@ class AuthenticatedShell extends WatchingWidget {
     final user = watchValue((AuthManager m) => m.userState);
     if (user == null) return child;
 
-    if (!allReady()) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Stack(
       children: [
         child,

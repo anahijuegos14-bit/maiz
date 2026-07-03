@@ -29,19 +29,43 @@ class _FloatingAiChatState extends State<FloatingAiChat> {
   }
 
   void _send(String text) {
-    di<AiChatManager>().sendMessage(text);
+    if (!di.isRegistered<AiChatManager>()) return;
+    try {
+      di<AiChatManager>().sendMessage(text);
+    } on StateError {
+      // Manager o sus dependencias aún no están listos
+      return;
+    }
     _messageController.clear();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!di.isRegistered<AiChatManager>()) return const SizedBox.shrink();
+    // Evita acceder a managers no registrados o no listos.
+    if (!di.isRegistered<AiChatManager>() || !di.isRegistered<PlantsManager>()) {
+      return const SizedBox.shrink();
+    }
 
-    final manager = di<AiChatManager>();
-    final messages = watchValue((AiChatManager m) => m.messages);
-    final plants = watchValue((PlantsManager m) => m.plants);
-    final selectedPlantId = watchValue((AiChatManager m) => m.selectedPlantId);
+    late final AiChatManager manager;
+    try {
+      manager = di<AiChatManager>();
+    } on StateError {
+      return const SizedBox.shrink();
+    }
+
+    // Observar valores sólo después de asegurarnos que el manager está listo.
+    // Anotaciones explícitas para evitar 'prefer_typing_uninitialized_variables'
+    late final List<dynamic> messages;
+    late final List<dynamic> plants;
+    late final String? selectedPlantId;
+    try {
+      messages = watchValue((AiChatManager m) => m.messages);
+      plants = watchValue((PlantsManager m) => m.plants);
+      selectedPlantId = watchValue((AiChatManager m) => m.selectedPlantId);
+    } on StateError {
+      return const SizedBox.shrink();
+    }
     final colors = Theme.of(context).colorScheme;
 
     return Stack(
@@ -57,7 +81,7 @@ class _FloatingAiChatState extends State<FloatingAiChat> {
           Positioned(
             left: 16,
             right: 16,
-            bottom: 88,
+            bottom: 164,
             top: 80,
             child: Material(
               elevation: 8,
@@ -202,7 +226,7 @@ class _FloatingAiChatState extends State<FloatingAiChat> {
           ),
         Positioned(
           right: 16,
-          bottom: 16,
+          bottom: 92,
           child: FloatingActionButton(
             onPressed: () => setState(() => _isOpen = !_isOpen),
             backgroundColor: colors.primary,

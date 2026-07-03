@@ -15,3 +15,4 @@ Future<void> main() async {
   Command.globalExceptionHandler = AppCoordinator.globalErrorHandler;
   runApp(const PlantManagerApp());
 }
+

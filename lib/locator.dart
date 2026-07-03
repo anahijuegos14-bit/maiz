@@ -17,7 +17,10 @@ final getIt = GetIt.instance;
 void configureDependencies() {
   getIt.registerSingleton<InteractionManager>(InteractionManager());
   getIt.registerLazySingleton<FirebaseAuthService>(
-    () => FirebaseAuthService(FirebaseAuth.instance),
+    () => FirebaseAuthService(
+      FirebaseAuth.instance,
+      FirebaseFirestore.instance,
+    ),
   );
   getIt.registerLazySingleton<PlantsFirestoreService>(
     () => PlantsFirestoreService(FirebaseFirestore.instance),

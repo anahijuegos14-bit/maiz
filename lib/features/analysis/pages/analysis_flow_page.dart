@@ -9,8 +9,9 @@ enum _AnalysisStep { selectPlant, uploadImage }
 
 class AnalysisFlowPage extends WatchingStatefulWidget {
   final AnalysisType? initialType;
+  final bool embedded;
 
-  const AnalysisFlowPage({super.key, this.initialType});
+  const AnalysisFlowPage({super.key, this.initialType, this.embedded = false});
 
   @override
   State<AnalysisFlowPage> createState() => _AnalysisFlowPageState();
@@ -51,14 +52,16 @@ class _AnalysisFlowPageState extends State<AnalysisFlowPage> {
         ? 'Sube o toma una foto de la hoja.'
         : 'Sube una imagen aérea o panorámica del terreno.';
 
-    return AuthenticatedShell(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Nuevo análisis'),
-        ),
-        body: ListView(
+    final content = ListView(
           padding: const EdgeInsets.all(16),
           children: [
+          Text(
+            'Nuevo análisis',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 4),
           Text(
             'Detecta enfermedades en tus cultivos.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -180,14 +183,23 @@ class _AnalysisFlowPageState extends State<AnalysisFlowPage> {
                     ? null
                     : () {
                         manager.analyzeCommand.run();
-                        if (context.mounted) Navigator.pop(context);
+                        if (!widget.embedded && context.mounted) {
+                          Navigator.pop(context);
+                        }
                       },
                 child: Text(isAnalyzing ? 'Analizando...' : 'Iniciar análisis'),
               ),
             ],
           ],
           ],
-        ),
+        );
+
+    if (widget.embedded) return content;
+
+    return AuthenticatedShell(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Nuevo análisis')),
+        body: content,
       ),
     );
   }

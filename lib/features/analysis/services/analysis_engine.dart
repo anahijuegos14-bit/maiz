@@ -17,67 +17,24 @@ class AnalysisResult {
       disease.isEmpty || disease.toLowerCase().contains('saludable');
 }
 
-/// Motor de detección simulado. Sustituir por modelo IA real en producción.
+/// Motor simulado mientras se conecta el modelo IA real.
 class AnalysisEngine {
-  static const _diseases = [
-    (
-      name: 'Roya del maíz',
-      summary: 'Manchas pardo-anaranjadas en hojas',
-      recommendations: [
-        'Aplicar fungicida a base de triazoles.',
-        'Eliminar restos de cultivo infectados.',
-        'Evitar riego por aspersión en horas frescas.',
-      ],
-    ),
-    (
-      name: 'Mancha gris (Cercospora)',
-      summary: 'Lesiones rectangulares grisáceas',
-      recommendations: [
-        'Rotar con cultivos no susceptibles.',
-        'Usar variedades tolerantes.',
-        'Monitorear humedad del follaje.',
-      ],
-    ),
-    (
-      name: 'Tizón foliar',
-      summary: 'Necrosis en bordes de hoja',
-      recommendations: [
-        'Mejorar drenaje del suelo.',
-        'Aplicar fungicida preventivo.',
-        'Reducir densidad de siembra.',
-      ],
-    ),
-  ];
-
   static AnalysisResult analyze({
     required AnalysisType type,
     required String imageName,
   }) {
-    final hash = imageName.hashCode.abs();
-    final isHealthy = hash % 4 == 0;
-
-    if (isHealthy) {
-      return const AnalysisResult(
-        summary: 'Cultivo saludable',
-        disease: 'Cultivo saludable',
-        affectionPercent: 0,
-        recommendations: [
-          'Mantén monitoreo semanal del follaje.',
-          'Continúa con riego y fertilización según etapa fenológica.',
-        ],
-      );
-    }
-
-    final disease = _diseases[hash % _diseases.length];
-    final affection = 15.0 + (hash % 70);
-
     return AnalysisResult(
       summary: type == AnalysisType.hoja
-          ? 'Enfermedad detectada en hoja: ${disease.name}'
-          : 'Zona afectada en terreno: ${disease.name}',
-      disease: disease.name,
-      affectionPercent: affection,
-      recommendations: disease.recommendations,
+          ? 'Enfermedad detectada en hoja: Roya común'
+          : 'Zona afectada en terreno: Roya común',
+      disease: 'Roya común',
+      affectionPercent: 40,
+      recommendations: const [
+        'Aplicar fungicida foliar a base de triazoles o estrobilurinas durante los próximos 2 a 3 días.',
+        'Revisar hojas nuevas cada 48 horas y repetir análisis en 7 días para confirmar evolución.',
+        'Evitar riego por aspersión al final de la tarde para reducir humedad nocturna en el follaje.',
+        'Retirar residuos vegetales muy infectados y mejorar ventilación entre plantas.',
+      ],
     );
   }
 }

@@ -18,7 +18,20 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final analyses = watchValue((AnalysisManager m) => m.analyses);
+    // Evitar acceder al manager si aún no está registrado/listo.
+    if (!di.isRegistered<AnalysisManager>()) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Anotación explícita para evitar 'prefer_typing_uninitialized_variables'
+    late final List<AnalysisEntry> analyses;
+    try {
+      analyses = watchValue((AnalysisManager m) => m.analyses);
+    } on StateError {
+      // Manager aún no listo: mostrar indicador y reintentar en rebuild.
+      return const Center(child: CircularProgressIndicator());
+    }
+
     final colors = Theme.of(context).colorScheme;
 
     final filtered = analyses.where((entry) {
